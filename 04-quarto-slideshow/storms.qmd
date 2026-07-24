@@ -2,9 +2,6 @@
 title: "Storms"
 format: revealjs
 jupyter: python3
-tutorial:
-  id: "python_lessons/quarto_intro/quarto_slideshow"
-  version: 0.1
 ---
 
 ```{python}
@@ -14,26 +11,3 @@ import pandas as pd
 from plotnine import ggplot, aes, geom_bar
 storms = pd.read_csv("data/storms.csv")
 ```
-
-<!--portion: bullets -->
-
-## Storm names
-
-* Amy
-* Caroline
-* Ida
-
-<!--portion: background -->
-
-**"Storms are given short, distinctive names to avoid confusion and streamline communications." -- National Oceanic and Atmospheric Administration**
-
-
-
-
-
-
-
-
-
-
-
