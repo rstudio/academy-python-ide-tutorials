@@ -1,0 +1,103 @@
+---
+title: "Analysis of Palmer Penguins"
+author: Your favorite colleague
+format: html
+jupyter: python3
+execute: 
+  echo: true
+tutorial:
+  id: "python_lessons/quarto_intro/quarto-survey"
+---
+
+```{python}
+#| label: setup
+#| include: false
+from palmerpenguins import load_penguins_raw
+penguins = load_penguins()
+```
+
+## Exploring the data
+
+The `penguins` data set comes from the palmerpenguins package. We can examine it below.
+
+This dataset has `len(penguins)` rows.
+
+```{python}
+penguins
+```
+
+### Removing missing values
+
+The data set has some observations with missing values for body mass. We will filter those out below.
+
+```{python}
+penguins = penguins.dropna(subset=["body_mass_g"])
+```
+
+<!-- portion: select -->
+
+## Penguin bills
+
+In this section of the report, we'll examine characteristics of penguin bills by species. Let's focus on only the columns of the data set that we'll need. The table of the subsetted data is shown below:
+
+```{python}
+#| echo: false
+# Select the "species" and "bill" columns
+species_bills = penguins.loc[:, ["species", "bill_length_mm", "bill_depth_mm"]]
+species_bills
+```
+
+<!-- portion: plotting -->
+
+### Visualization
+
+We display the distribution of the penguin bill length below.
+
+```{python}
+#| label: plot1
+from plotnine import ggplot, aes, geom_point, geom_smooth, theme_minimal, labs, geom_histogram
+
+ggplot.show(
+    ggplot(data=species_bills, mapping=aes(x="bill_length_mm"))
+    + geom_histogram()
+    + theme_minimal()
+    + labs(x="Bill length (mm)")
+)
+```
+
+
+<!-- portion: label -->
+
+Let's examine the data with a plot. We will focus on the relationship between bill length and bill depth. 
+
+```{python}
+#| label: plot1
+#| echo: false
+plot = (
+    ggplot(data=species_bills, mapping=aes(x="bill_length_mm", y="bill_depth_mm", color="species"))
+    + geom_point()
+    + geom_smooth(method="lm", se=False)
+    + theme_minimal()
+    + labs(
+        title="Within species, longer bills are deeper",
+        x="Bill length (mm)",
+        y="Bill depth (mm)",
+    )
+)
+
+ggplot.show(plot)
+```
+
+## Appendix
+
+Additional materials can be found below.
+
+### Raw data
+
+The raw data set containing additional variables for the penguins studied, is displayed below.
+
+```{python}
+#| label: display-data
+load_penguins_raw()
+```
+

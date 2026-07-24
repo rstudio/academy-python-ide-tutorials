@@ -1,0 +1,202 @@
+---
+title: "Mammalian sleep"
+format: html
+jupyter: python3
+tutorial:
+  id: "python_lessons/quarto_intro/quarto_layouts"
+  version: 0.1
+execute: 
+  echo: false
+  warning: false
+---
+
+```{python}
+#| label: setup
+#| include: false
+import pandas as pd
+from plotnine import ggplot, aes, geom_point, geom_smooth, scale_y_log10, scale_x_log10, theme_minimal, labs
+from plotnine.data import msleep
+from IPython.display import display, Markdown
+```
+
+# Introduction to the Mammalian Sleep Dataset
+
+This report describes `msleep`, a data set of 83 mammals, including their body weight, brain size, total hours of sleep, and number of REM cycles.
+
+![Photo by NOAA on Unsplash](images/pilot_whale.jpg)
+
+<!--portion: page --> 
+
+## Sleep by diet
+
+Across all types of diets, there are mammals who spend a substantial portion of their day sleeping.
+
+```{python}
+#| label: tbl-top-sleepers
+#| tbl-cap: "Top Sleepers"
+top_sleepers = (msleep
+  .dropna(subset=['vore', 'sleep_total']) 
+  .groupby('vore') 
+  .apply(lambda x: x.loc[x.sleep_total.idxmax()]) 
+  .reset_index(drop=True))
+
+display(top_sleepers)
+```
+
+<!--portion: callout --> 
+
+Missing data
+
+```{python}
+#| label: missing-data
+#| echo: false
+n_missing = msleep[['bodywt', 'brainwt', 'sleep_rem']].isna().sum()
+```
+
+As you may have noticed above, many values in this data set are missing, so interpret these statistics with caution.
+For instance, the variable `sleep_rem` is missing `{python} n_missing['sleep_rem']` values, and `brainwt` is missing `{python} n_missing['brainwt']`, but `bodywt` is missing `{python} n_missing['bodywt']`.
+
+<!--portion: tabset --> 
+
+## REM Cycles by Diet
+
+Another important aspect of sleep is the number of REM cycles.
+While number of REM cycles is closely linked to total hours of sleep, the list of top REM cycles by diet is different than above.
+Let's take a look at the top REM cyclists by diet.
+
+```{python}
+#| label: describe-animal
+#| echo: false
+top_rem = (msleep.dropna(subset=['vore', 'sleep_rem']) 
+  .groupby('vore') 
+  .apply(lambda x: x.nlargest(1, 'sleep_rem')) 
+  .reset_index(drop=True))
+
+# split into a dictionary of data frames by animal
+top_rem_dict = {k: v for k, v in top_rem.groupby('name')}
+
+def describe_animal(animal):
+    animal = top_rem_dict[animal]
+    return display(Markdown(f"The {animal['name'].iloc[0]} is a {animal['vore'].iloc[0]}vore that weighs {animal['bodywt'].mean()} kilograms on average. It sleeps a total of about {animal['sleep_total'].iloc[0]} hours with {animal['sleep_rem'].iloc[0]} REM cycles."))
+```
+
+Giant Armadillo
+
+```{python}
+#| label: describe-animal-ga
+describe_animal("Giant armadillo")
+```
+
+North American Opossum
+
+```{python}
+#| label: describe-animal-nao
+describe_animal("North American Opossum")
+```
+
+Thick-tailed Opossum
+
+```{python}
+#| label: describe-animal-tto
+describe_animal("Thick-tailed opposum")
+```
+
+Thirteen-lined Ground Squirrel
+
+```{python}
+#| label: describe-animal-tlgs
+describe_animal("Thirteen-lined ground squirrel")
+```
+
+<!--portion: columns --> 
+
+## The thirteen-lined ground squirrel's body weight
+
+```{python}
+#| label: fig-tlgs-body-wt
+#| fig-cap: "The thirteen-lined ground squirrel's body weight among other mammals"
+squirrel_data = top_rem_dict["Thirteen-lined ground squirrel"]
+
+(ggplot(msleep, aes(x='sleep_total', y='bodywt')) +
+    geom_point(color="#ccc") + 
+    geom_point(data=squirrel_data, color="firebrick", size=2.5) + 
+    scale_x_log10() + 
+    scale_y_log10() + 
+    theme_minimal() + 
+    labs(x="Total Sleep (hours)", y="Body Weight (kg)"))
+```
+
+Thirteen-lined ground squirrels have the most REM cycles among herbivores.
+Like a lot of smaller mammals, they sleep a lot.
+
+![[Image source](https://commons.wikimedia.org/w/index.php?curid=10724264)](images/Chomp_2.jpg)
+
+<!--portion: ncol --> 
+
+## Body weight, brain size, and sleep
+
+Mammals who sleep longer have smaller bodies and brains.
+
+```{python}
+#| label: fig-sleep-total
+#| fig-cap: 
+#|   - "Sleep total versus body weight"
+#|   - "Sleep total versus brain weight"
+p1 = (ggplot(msleep, aes('sleep_total', 'bodywt')) + 
+  geom_point(color="#ccc") + 
+  geom_smooth(color="#4682B4") + 
+  scale_y_log10() + 
+  scale_x_log10() + 
+  theme_minimal() + 
+  labs(x="Total Sleep (hours)", y="Body Weight (kg)"))
+
+p2 = (ggplot(msleep, aes('sleep_total', 'brainwt')) + 
+  geom_point(color="#ccc") + 
+  geom_smooth(color="#4682B4") + 
+  scale_y_log10() + 
+  scale_x_log10() + 
+  theme_minimal() + 
+  labs(x="Total Sleep (hours)", y="Brain Weight (kg)"))
+  
+p1, p2
+```
+
+<!--portion: margins --> 
+
+## Revisiting the top REM cyclists
+
+```{python}
+#| label: tbl-top-rem
+#| tbl-cap: "Top REM Cycles by Diet"
+display(top_rem[['name', 'vore', 'sleep_total', 'sleep_rem']])
+```
+
+The North American Opossum is the omnivore with the highest number of REM cycles as well as the longest average sleep time.
+
+![[Image source](https://commons.wikimedia.org/w/index.php?curid=11491)](images/Opossum-drawing.jpg)
+
+<!--portion: codemargins --> 
+
+## Considering sleep total vs. REM cycles
+
+Unsurprisingly, sleep total is closely linked to REM cycles, but it's not the only factor.
+Two mammals, the North American opossum and the thick-tailed opossum are the top sleepers and REM cyclists for their diets.
+The little brown bat, while the top sleeper among insectivores, has a meager 2 REM cycles on average.
+Notably, the Arctic ground squirrel is missing data on number of REM cycles.
+
+```{python}
+#| label: top-sleepers
+#| fig-cap: "Sleep Total vs. REM Cycles"
+#| tbl-cap: "Top Sleepers"
+p3 = (ggplot(msleep, aes(x='sleep_total', y='sleep_rem')) + 
+    geom_point(color='#ccc') + 
+    geom_point(data=top_sleepers, color='firebrick', size=2.5) + 
+    scale_x_log10() + 
+    scale_y_log10() + 
+    theme_minimal() + 
+    labs(x='Total Sleep (hours)', y='Number of REM cycles'))
+
+t1 = display(top_sleepers[['name', 'vore', 'sleep_total', 'sleep_rem']])
+
+p3, t1
+```

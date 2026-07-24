@@ -1,0 +1,71 @@
+---
+title: "Texas housing sales report"
+format: html
+jupyter: python3
+tutorial:
+  id: "python_lessons/quarto_intro/quarto-parameterize"
+  version: 0.1
+---
+
+```{python}
+#| tags: [parameters]
+city = "Abilene"
+```
+
+```{python}
+#| label: setup
+#| include: false
+import pandas as pd
+from plotnine import ggplot, aes, geom_boxplot, geom_line
+from IPython.display import display, Markdown
+from plotnine.data import txhousing
+```
+
+<!--portion: print -->
+
+```{python}
+city
+```
+
+
+<!--portion: subset --> 
+
+## Houston is getting pricier
+
+```{python}
+select_city = txhousing[txhousing['city'] == "Houston"]
+```
+
+```{python}
+ggplot.show(
+  ggplot(select_city)
+ + aes(x="year", y="median", group="year")
+ + geom_boxplot(fill="cadetblue")
+)
+```
+
+
+<!--portion: recap --> 
+
+```{python}
+display(Markdown(f"""
+## Median sale prices across Texas (red = {city})
+"""))
+```
+
+```{python}
+# replace 2014 with a parameter
+select_year = txhousing[txhousing['year'] == 2014]
+```
+
+```{python}
+ggplot.show(
+  ggplot(select_year)
+ + aes(x="month", y="median", group="city")
+ + geom_line(color="gray")
+ + geom_line(data=select_year[select_year['city'] == "Abilene"], color="red")
+)
+```
+
+
+
