@@ -1,22 +1,28 @@
 # Posit Academy — Python IDE Tutorial Files
 
-Starter files for the Posit Academy **Foundations of Python for Data Science** IDE tutorials. These tutorials run in your browser but ask you to work with files in your IDE (Positron or RStudio) alongside the tutorial.
+Starter files for the Posit Academy **Foundations of Python for Data Science** IDE tutorials. These tutorials run in your browser but ask you to work with files in Positron alongside the tutorial.
 
 **By accessing these Posit Academy course materials, you agree to Posit's [End User License Agreement](https://posit.co/about/eula/) and [Learning Services Agreement](https://posit.co/learning-services-agreement/).**
 
 ## Setup
 
-Clone this repository in a Terminal on Posit Workbench:
+Follow the **Set Up IDE Tutorials** tutorial on your course site for step-by-step instructions with screenshots. In short:
 
-```bash
-git clone https://github.com/rstudio/academy-python-ide-tutorials.git
-```
+1. In a Positron session on Posit Workbench, click **New > New Folder from Git...** and paste this repository's URL:
 
-Then install the Python packages used by the tutorials:
+   ```
+   https://github.com/rstudio/academy-python-ide-tutorials.git
+   ```
 
-```bash
-pip install pandas plotnine palmerpenguins
-```
+2. If Positron shows a **Restricted Mode** banner, click **Trust this folder** in the Console, then click **Trust**.
+
+3. Open the **Terminal** tab and run this command to install the Python packages used by the tutorials:
+
+   ```bash
+   uv venv --allow-existing && uv pip install jupyter pandas palmerpenguins plotnine scikit-learn statsmodels
+   ```
+
+4. Click the interpreter button in the top right corner of Positron and select the Python whose name ends in **(uv: academy-python-ide-tutorials)**.
 
 ## Folder contents
 
