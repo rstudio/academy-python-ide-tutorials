@@ -22,7 +22,7 @@ Follow the **Set Up IDE Tutorials** tutorial on your course site for step-by-ste
    uv venv --allow-existing && uv pip install jupyter pandas palmerpenguins plotnine scikit-learn statsmodels
    ```
 
-4. Click the interpreter button in the top right corner of Positron and select the Python whose name ends in **(uv: academy-python-ide-tutorials)**.
+4. Click the interpreter button in the top right corner of Positron and select the Python whose name ends in **(uv: academy-python-ide-tutorials)**. It may not be at the top of the list; the **(Global)** Pythons don't have your packages.
 
 ## Folder contents
 
